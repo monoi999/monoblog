@@ -14,7 +14,7 @@
             width: 220px;
             background: #f4f4f4;
             height: 100vh;
-            padding: 30px 0 0 0;
+            padding: 30px 0 0 5px;
             box-shadow: 2px 0 8px rgba(0,0,0,0.04);
             position: fixed;
             top: 0;
@@ -46,18 +46,20 @@
 <body>
     <nav class="sidebar">
         <ul>
-            <li><a href="day1.html">1일차 강의</a></li>
-            <li><a href="day2.html">2일차 강의</a></li>
-            <li><a href="day3.html">3일차 강의</a></li>
-            <li><a href="day4.html">4일차 강의</a></li>
-            <li><a href="day5.html">5일차 강의</a></li>
+            <li><a href="#" onclick="loadLecture('day1.html'); return false;">1일차 강의</a></li>
+            <li><a href="#" onclick="loadLecture('day2.html'); return false;">2일차 강의</a></li>
+            <li><a href="#" onclick="loadLecture('day3.html'); return false;">3일차 강의</a></li>
+            <li><a href="#" onclick="loadLecture('day4.html'); return false;">4일차 강의</a></li>
+            <li><a href="#" onclick="loadLecture('day5.html'); return false;">5일차 강의</a></li>
         </ul>
     </nav>
     <div class="main">
-        <h1>개인 강의 블로그</h1>
-        <p>왼쪽 메뉴에서 강의 일차를 선택하세요.</p>
+        <iframe id="lectureFrame" src="day1.html" style="width:100%; min-height:80vh; border:none; background:#fafbfc;"></iframe>
     </div>
-    <h3>안녕!!! 모노의 페이지</h3>
-    <h5>vscode와 연동 성공</h5>
+    <script>
+        function loadLecture(page) {
+            document.getElementById('lectureFrame').src = page;
+        }
+    </script>
 </body>
 </html>
