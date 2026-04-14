@@ -11,6 +11,7 @@
         .section { margin-bottom: 2em; }
         .highlight { background: #e6f7ff; padding: 10px 18px; border-radius: 8px; margin: 18px 0; }
     </style>
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
 </head>
 <body>
 <div class="section">
@@ -20,7 +21,7 @@
         AI의 기본 개념과 이론적 배경 지식을 이해하고 실무에서 AI를 효과적으로 활용할 수 있도록 기초 지식을 다룬다<br>
     </div>
 
-    <h2>❇️ 생성형 AI(Generative AI)</h2>
+    <h3>❇️ 생성형 AI(Generative AI)</h3>
 
 
 <table border="1" cellpadding="6" style="border-collapse:collapse; margin-top:10px; margin-bottom:16px;">
@@ -66,7 +67,7 @@
     </tbody>
 </table>
 
-<h2>❇️ AI 어시스턴트(AI Assistant)와 AI 에이전트(Agent)</h2>
+<h3>❇️ AI 어시스턴트(AI Assistant)와 AI 에이전트(Agent)</h3>
 <h4>👉 AI 어시스턴트는 "지시에 따라 움직이는 비서", AI 에이전트는 "목표를 위해 스스로 생각하는 대리인"</h4>
 <table border="1" cellpadding="6" style="border-collapse:collapse; margin-top:10px; margin-bottom:16px;">
     <thead style="background:#f0f6ff;">
@@ -128,7 +129,7 @@
 </table>
 </div>
 
-<h2>❇️ 프롬프트 중요성</h2>
+<h3>❇️ 프롬프트 중요성</h3>
 
 <div style="margin-bottom:18px;">
     <h4>👉 프롬프트란?</h4>
@@ -256,7 +257,26 @@
     </ol>
 </div>
 
-<h2>❇️ [워크샵] 타이타닉 데이터셋을 이용한 전처리 및 분석</h2>
+<h3>❇️ [워크샵] 타이타닉 데이터셋을 이용한 전처리 및 분석</h3>
+<h4>1️⃣ 데이터셋 정보 파악하기</h4>
+- 'data/titanic.csv' 파일 읽어와 다음 음 코드를 실행하여 확인한다
+
+
+```python
+import pandas as pd
+df = pd.read_csv('data/titanic.csv')
+df.head()
+df.info()
+```
+    <!-- 파이썬 코드 영역 -->
+    <py-script>
+        print("Hello from Python in HTML!")
+        result = 1 + 2
+        print(f"1 + 2 = {result}")
+    </py-script>
+
+
+
 <div style="margin-bottom:18px;">
     <ol>
         <li>
