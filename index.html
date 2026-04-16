@@ -27,9 +27,21 @@
         .sidebar ul {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
         .sidebar li {
             margin: 18px 0;
+        }
+        .sidebar .submenu {
+            padding-left: 18px;
+            margin-top: 8px;
+        }
+        .sidebar .submenu li {
+            margin: 8px 0 0;
+        }
+        .sidebar .submenu a {
+            font-size: 0.98em;
+            color: #555;
         }
         .sidebar a {
             text-decoration: none;
@@ -52,8 +64,12 @@
         <h3>[과정 목차]</h3>
         <ul>
             <li><a href="#" onclick="loadLecture('chap1.html'); return false;">1과. 바이브코딩 이해</a></li>
-            <li><a href="#" onclick="loadLecture('chap2.html'); return false;">2과. AI 활용1</a></li>
-            <li><a href="#" onclick="loadLecture('chap2_notebook.html'); return false;">2과 실습 노트북</a></li>
+            <li>
+                <a href="#" onclick="loadLecture('chap2.html'); return false;">2과. AI 활용1</a>
+                <ul class="submenu">
+                    <li><a href="#" onclick="loadLecture('chap2_notebook.html'); return false;">2과 실습 노트북</a></li>
+                </ul>
+            </li>
             <li><a href="#" onclick="loadLecture('day3.html'); return false;">3일차 강의</a></li>
             <li><a href="#" onclick="loadLecture('day4.html'); return false;">4일차 강의</a></li>
             <li><a href="#" onclick="loadLecture('day5.html'); return false;">5일차 강의</a></li>
