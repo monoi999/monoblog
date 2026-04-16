@@ -11,6 +11,7 @@
     .section { margin-bottom: 2em; }
     .highlight { background: #e6f7ff; padding: 10px 18px; border-radius: 8px; margin: 18px 0; }
     .code {font-weight: bold; color: blue; font-size:large; border: 1px solid; padding : 10px; margin: 5px 10px; }
+    .prompt { background: #f6f8fa; margin-left: 30px; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -35,62 +36,68 @@ print(df.head())
 print(df.info())
 </pre>
 
-<img src="/images/chap2_1.png" alt="타이타닉 데이터셋 정보" width="70%"/>
-<img src="/images/chap2_2.png" alt="타이타닉 결측치 분석" width="70%"/>
+<img src="images/chap2_1.png" alt="타이타닉 데이터셋 정보" width="70%"/><br>
+<img src="images/chap2_2.png" alt="타이타닉 결측치 분석" width="25%"/>
 </div>
 
 
 <div class="section">
 <h2>❇️ 데이터 처리·분석을 위한 프롬프트 가이드</h2>
-    <ol>
-        <li>
-            <b>데이터 탐색 및 전처리 (Cleaning)</b>
-            <ul>
-                <li>데이터의 생김새를 파악하고 결측치(Missing Value)를 처리하는 단계</li>
-                <li><b>프롬프트 예시:</b><br>
-                    <span style="background:#f6f8fa; padding:2px 6px; border-radius:4px; display:inline-block; margin:4px 0;">
-                        너는 데이터 분석 전문가야. Python의 seaborn 라이브러리에 내장된 타이타닉 데이터셋을 불러와서 전처리를 수행하는 코드를 작성해줘.<br>
-                        <b>작업:</b> 각 컬럼의 결측치 개수를 확인하고, 'age'는 중앙값으로, 'embarked'는 최빈값으로 채워줘. 'deck' 컬럼은 결측치가 너무 많으니 삭제해줘.<br>
-                        <b>출력:</b> 단계별 설명과 함께 실행 가능한 코드를 제공해줘.
-                    </span>
-                </li>
-            </ul>
-        </li>
-        <li>
-            <b>탐색적 데이터 분석 (EDA)</b>
-            <ul>
-                <li>생존율에 영향을 미친 핵심 요인을 시각화로 찾아내는 단계</li>
-                <li><b>프롬프트 예시:</b><br>
-                    <span style="background:#f6f8fa; padding:2px 6px; border-radius:4px; display:inline-block; margin:4px 0;">
-                        타이타닉 데이터에서 객실 등급(pclass)과 성별(sex)에 따른 생존율(survived) 차이를 분석하고 싶어.<br>
-                        <b>시각화:</b> seaborn을 사용해 성별과 객실 등급별 생존자 수를 보여주는 막대 그래프(countplot)를 그려줘.<br>
-                        <b>인사이트:</b> 그래프를 통해 알 수 있는 주요 특징(예: '여성과 아이 먼저' 원칙이 지켜졌는지 등)을 3줄로 요약해줘.
-                    </span>
-                </li>
-            </ul>
-        </li>
-        <li>
-            <b>가설 검증 및 인사이트 도출</b>
-            <ul>
-                <li>단순 수치를 넘어 비즈니스나 정책적 시사점을 도출하는 단계</li>
-                <li><b>프롬프트 예시:</b><br>
-                    <span style="background:#f6f8fa; padding:2px 6px; border-radius:4px; display:inline-block; margin:4px 0;">
-                        너는 역사적 데이터 통계 학자야. 타이타닉 생존 데이터 분석 결과 '1등석 여성의 생존율이 가장 높았다'는 점이 확인됐어.<br>
-                        <b>요구사항:</b> 이 결과가 당시의 사회적 배경과 어떤 연관이 있는지 분석하고, 만약 현대의 재난 대응 시스템에 이 데이터를 적용한다면 어떤 구조 우선순위 전략을 세울 수 있을지 제안해줘.
-                    </span>
-                </li>
-            </ul>
-        </li>
-    </ol>
+<h3>1단계: 데이터 파악 및 탐색적 데이터 분석 (EDA)</h3>
+가장 먼저 데이터의 구조를 이해하고 결측치나 이상치를 확인해야 합니다.
+
+<div class="prompt">
+<h4>&gt; 프롬프트 예시: </h4>        
+"타이타닉 데이터셋(titanic.csv)을 불러오고 데이터의 구조(Shape), 컬럼명, 데이터 타입을 요약해 줘. <br>
+특히 각 컬럼별 결측치 현황을 파악하고, 수치형 데이터의 기초 통계량(평균, 표준편차 등)을 보여주는 Python 코드를 작성해 줘."
 </div>
 
-
-
-<div class="section highlight">
-    <strong>실무와 취업 준비를 위한 팁:</strong><br>
-    - AI의 기본 원리와 데이터의 중요성을 이해하면 실무 적응력이 높아집니다.<br>
-    - 다양한 AI 활용 사례를 찾아보고, 데이터 분석 프로젝트 경험을 쌓는 것이 중요합니다.<br>
-    - Python, pandas, scikit-learn 등 데이터 분석 도구에 익숙해지세요.
+<h3>2단계: 데이터 전처리 (Data Cleaning & Engineering)</h3>
+AI에게 도메인 지식을 활용한 데이터 정제를 요청하는 단계입니다.
+<div class="prompt">
+<h4>&gt; 프롬프트 예시: </h4>    
+데이터 전처리를 진행할 거야. 다음 조건에 맞춰 코드를 작성해 줘.<br>
+<ul>
+    <li>'Age'의 결측치는 'Pclass'와 'Sex'별 중앙값으로 채워줘.</li>
+    <li>'Embarked'의 결측치는 최빈값으로 채우고, 'Cabin'은 결측치가 너무 많으니 삭제해 줘.</li>
+    <li>'Name' 컬럼에서 호칭(Mr, Mrs, Miss 등)을 추출해 'Title'이라는 새로운 컬럼을 만들어 줘.</li>
+    <li>범주형 변수인 'Sex'와 'Embarked'는 원-핫 인코딩(One-Hot Encoding)을 적용해 줘.</li>
+</ul>
 </div>
+
+<h3>3단계: 가설 기반 시각화 분석</h3>
+단순한 차트가 아니라, 비즈니스 질문(생존율에 영향을 미치는 요소)에 답하는 시각화를 요청합니다.
+<div class="prompt">
+<h4>&gt; 프롬프트 예시: </h4>    
+생존에 영향을 미치는 주요 요인을 분석하고 싶어. Seaborn 라이브러리를 사용해 다음 시각화를 수행해 줘.<br>
+<ul>
+    <li>객실 등급(Pclass)과 성별(Sex)에 따른 생존율 변화를 보여주는 막대 그래프.</li>
+    <li>연령(Age)에 따른 생존자/사망자 분포를 비교하는 KDE 플롯.</li>
+    <li>가족 수('SibSp' + 'Parch')와 생존율의 상관관계를 보여주는 히트맵.</li>
+    <li>각 그래프가 시사하는 바를 데이터 전문가 관점에서 해석해 줘.</li>
+</ul>
+</div>
+
+<h3>4단계: 머신러닝 모델링 및 평가</h3>
+데이터를 학습시켜 예측 모델을 만드는 단계입니다.
+<div class="prompt">
+<h4>&gt; 프롬프트 예시: </h4>    
+생존 여부('Survived')를 예측하는 머신러닝 모델을 만들 거야.<br>
+<ul>
+    <li>데이터를 학습용(Train)과 테스트용(Test)으로 8:2 비율로 분리해 줘</li>
+    <li>Random Forest 분류기를 사용해 학습을 진행하고, 테스트 데이터에 대한 정확도(Accuracy), 정밀도(Precision), 재현율(Recall)을 산출해 줘</li>
+    <li>모델이 판단하기에 생존 예측에 가장 중요하게 작용한 변수(Feature Importance) TOP 5를 시각화해 줘</li>
+</ul>
+</div>
+
+<h3>5단계: 결과 요약 및 대시보드 기획 (Streamlit 연계)</h3>
+분석 결과를 비전문가도 이해할 수 있게 정리하고 시각화 도구로 확장합니다.
+<div class="prompt">
+<h4>&gt; 프롬프트 예시: </h4>    
+지금까지의 분석 결과를 종합해서 '타이타닉 생존 핵심 요인 보고서' 초안을 작성해 줘. <br>
+그리고 이 분석 결과를 Streamlit 대시보드로 옮기려고 해. <br>
+사용자가 객실 등급이나 성별을 선택하면 실시간으로 생존 확률을 시뮬레이션해 주는 인터랙티브 대시보드의 파이썬 코드 구조를 짜줘.
+</div>
+
 </body>
 </html>
