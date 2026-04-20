@@ -1,207 +1,118 @@
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-from sklearn.ensemble import RandomForestClassifier
-
-# 1. 페이지 설정
-st.set_page_config(page_title="타이타닉 종합 대시보드", layout="wide")
-
-# --- 2. 디자인 개선 (탭 글자 크기 및 스타일) ---
-st.markdown("""
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Chap1. AI 활용1 :타이타닉 생존 인사이트</title>
     <style>
-        /* 탭 텍스트 크기 확대 및 강조 */
-        .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
-            font-size: 16px;
-            font-weight: bold;
-            color: #31333F;
-        }
-        
-        /* 탭 메뉴 간격 및 테두리 */
-        .stTabs [data-baseweb="tab-list"] {
-            gap: 15px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        /* 탭 버튼 배경 및 라운딩 */
-        .stTabs [data-baseweb="tab"] {
-            height: 55px;
-            background-color: #f9f9f9;
-            border-radius: 8px 8px 0px 0px;
-            padding: 0px 30px;
-        }
-        
-        /* 선택된 활성 탭 스타일 */
-        .stTabs [aria-selected="true"] {
-            background-color: #f0f7ff !important;
-            border-bottom: 4px solid #007bff !important;
-        }
+    body { font-family: Arial, sans-serif; margin: 40px; background: #fafbfc; }
+    h1 { color: #0078d4; }
+    h2 { color: #333; margin-top: 2em; }
+    ul { line-height: 1.7; }
+    .section { margin-bottom: 2em; }
+    .highlight { background: #e6f7ff; padding: 10px 18px; border-radius: 8px; margin: 18px 0; }
+    .code {border: 1px dashed; padding : 10px; margin: 5px 100px 5px 50px; }
+    .prompt { background: #efeff0; padding: 10px 18px; border-radius: 8px; margin: 10px 300px 10px 50px;  border-radius: 8px; }
+    .result {margin: 5px 100px 5px 50px; }
     </style>
-""", unsafe_allow_html=True)
+</head>
+<body>
 
-# 3. 데이터 로드 및 전처리
-@st.cache_data
-def load_data():
-    df = pd.read_csv('titanic.csv')
-    # 전처리: 결측치 및 변수 생성
-    df['Title'] = df['Name'].str.extract(' ([A-Za-z]+)\.', expand=False)
-    df['Age'] = df['Age'].fillna(df.groupby('Title')['Age'].transform('median'))
-    df['Age'] = df['Age'].fillna(df['Age'].median())
-    df['Embarked'] = df['Embarked'].fillna(df['Embarked'].mode()[0])
+<div class="section">
+    <h1>AI 활용1 : 타이타닉 생존 인사이트 </h1>
+    <div class="section highlight">
+        <strong>강의 개요 : </strong> 
+        실전 데이터셋(타이타닉)으로 AI를 이용하여 전처리와 시각화하고 Streamlit으로 배포까지 만들기<br>
+        <img src="images/chap2_img2.png" alt="타이타닉 대시보드">
+    </div>
+</div>
+
+<div class="section">
+    <h2>❇️ 데이터 처리·분석을 위한 절차</h2>
+    <ol>
+        <li>문제 정의(목표 설정): 무엇을 알고 싶은지 문제를 정의하고 필요한 가설을 세움</li>
+        <li>데이터 수집: 설문조사, DB 추출, 웹 크롤링 등을 통해 필요한 자료를 모음</li>
+        <li>데이터 탐색 (EDA): 기술 통계와 시각화를 통해 데이터의 특징과 패턴을 파악</li>
+        <li>데이터 전처리/정제: 중복 제거, 결측치 보정, 오타 수정, 변환 등 분석 가능한 형태(Clean Data)로 만드는 가장 중요한 단계</li>
+        <li>데이터 모델링 및 평가: 통계 기법이나 머신러닝 알고리즘을 적용해 결과를 예측하거나 분류하여 인사이트 도출</li>
+        <li>결과 해석 및 보고: 분석 결과를 시각화하여 통찰을 도출하고 의사결정에 활용</li>
+    </ol>
     
-    # 항구 이름 가독성 개선
-    embarked_map = {'S': 'Southampton', 'C': 'Cherbourg', 'Q': 'Queenstown'}
-    df['Embarked_Full'] = df['Embarked'].map(embarked_map)
-    
-    # 연령대 그룹
-    bins = [0, 12, 18, 35, 60, 100]
-    labels = ['어린이', '청소년', '청년', '중년', '노년']
-    df['AgeGroup'] = pd.cut(df['Age'], bins=bins, labels=labels)
-    
-    # 모델용 인코딩
-    df['Sex_Code'] = df['Sex'].map({'male': 0, 'female': 1})
-    return df
+    <h2>❇️ 타이타닉 데이터셋을 이용하여 단계별 진행 사항</h2>
+    <ol>
+        <li>
+            <strong>문제 정의(목표 설정)</strong>
+            <p>타이타닉 데이터셋을 활용하여 생존율에 영향을 미치는 주요 요인을 분석하고, 이를 바탕으로 생존 예측 분석을 대시보드까지 구현하는 것을 목표로 한다.</p>
+            <ul>
+                <li>생존율에 영향을 미치는 주요 요인 분석: 객실 등급, 성별, 나이, 가족 수 등이 생존율과 어떤 관계가 있는지 탐색한다.</li>
+                <li>생존 예측 모델링: 머신러닝 알고리즘을 적용하여 승객의 생존 여부를 예측하는 모델을 구축한다.</li>
+                <li>결과를 시각화 및 인사이트 도출: 모델이 생존을 예측할 때 어떤 요인이 중요한지 확인하고 시각화한다.</li>
+                <li>대시보드 구현: 분석 결과를 시각화하여 비전문가도 쉽게 이해할 수 있는 대시보드를 Streamlit으로 구현한다.</li>
+            </ul>
+        </li>
+        <li>
+            <strong>데이터 수집 및 로드</strong>
+            <p>Kaggle Titanic이나 파이썬의 seaborn 라이브러리를 통해 데이터를 가져온다. 또는 실습자료 "data/titanic.csv"에서 데이터를 로드할 수 있다.</p>
+        </li>
+        <li>
+            <strong>데이터 파악 및 탐색적 데이터 분석 (EDA)</strong>
+            <p><ul>
+            <li>데이터의 구성과 특징을 파악하기 위해 컬럼별 데이터 타입, 결측치 현황, 기초 통계량 등을 확인한다.</li>
+            <li>주요 변수인 성별, 객실 등급, 나이, 가족수, 요금(fare) 등이 생존율과 어떤 관계가 있는지 확인하고 탐색 결과를 요약한다.</li>
+            </ul></p>
 
-df = load_data()
-
-# 4. 머신러닝 모델 학습
-@st.cache_resource
-def train_model(data):
-    X = data[['Pclass', 'Sex_Code', 'Age', 'SibSp', 'Parch', 'Fare']]
-    y = data['Survived']
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
-    model.fit(X, y)
-    return model
-
-model = train_model(df)
-
-# --- 5. 사이드바 필터 설정 (객실 등급, 성별, 탑승 항구) ---
-st.sidebar.header("🔍 데이터 분석 필터")
-st.sidebar.write("대시보드 차트에 적용될 조건을 선택하세요.")
-
-# 객실 등급 필터
-selected_pclass = st.sidebar.multiselect(
-    "1. 객실 등급 선택", 
-    options=sorted(df['Pclass'].unique()), 
-    default=df['Pclass'].unique()
-)
-
-# 성별 필터
-selected_sex = st.sidebar.multiselect(
-    "2. 성별 선택", 
-    options=df['Sex'].unique(), 
-    default=df['Sex'].unique()
-)
-
-# 탑승 항구 필터 (추가됨)
-selected_embarked = st.sidebar.multiselect(
-    "3. 탑승 항구 선택", 
-    options=df['Embarked_Full'].unique(), 
-    default=df['Embarked_Full'].unique()
-)
-
-# 데이터 필터링 적용
-filtered_df = df[
-    (df['Pclass'].isin(selected_pclass)) & 
-    (df['Sex'].isin(selected_sex)) & 
-    (df['Embarked_Full'].isin(selected_embarked))
-]
-
-# --- 6. 메인 레이아웃 및 탭 구성 ---
-st.title("🚢 타이타닉 생존 인사이트 대시보드")
-
-tab1, tab2 = st.tabs(["📊 데이터 분석 대시보드", "🔮 생존 예측 시뮬레이터"])
-
-# --- Tab 1: 분석 대시보드 ---
-with tab1:
-    st.subheader("📍 필터 결과 요약")
-    
-    # 상단 지표(Metrics)
-    m1, m2, m3, m4 = st.columns(4)
-    m1.metric("승객 수", f"{len(filtered_df)}명")
-    m2.metric("평균 생존율", f"{filtered_df['Survived'].mean():.1%}")
-    m3.metric("평균 연령", f"{filtered_df['Age'].mean():.1f}세")
-    m4.metric("평균 운임", f"${filtered_df['Fare'].mean():.1f}")
-    
-    st.divider()
-    
-    #차트 섹션
-    row1_col1, row1_col2 = st.columns(2)
-
-    with row1_col1:
-        st.subheader("📊 객실 등급별 생존자 수")
-        fig1 = px.histogram(filtered_df, x="Pclass", color="Survived", 
-                            barmode="group", color_discrete_map={0: "red", 1: "green"},
-                            labels={'Survived': '생존 여부 (0:사망, 1:생존)'})
-        st.plotly_chart(fig1, use_container_width=True)
-
-    with row1_col2:
-        st.subheader("👧 성별 및 연령대별 생존율")
-        # 생존율 계산을 위한 집계
-        survival_by_age = filtered_df.groupby(['AgeGroup', 'Sex'], as_index=False)['Survived'].mean()
-        fig2 = px.bar(survival_by_age, x="AgeGroup", y="Survived", color="Sex",
-                    barmode="group", title="연령대별 생존 확률")
-        st.plotly_chart(fig2, use_container_width=True)
-
-    row2_col1, row2_col2 = st.columns(2)
-
-    with row2_col1:
-        st.subheader("💰 요금(Fare)과 생존의 관계")
-        fig3 = px.box(filtered_df, x="Survived", y="Fare", color="Survived",
-                    points="all", title="생존 여부에 따른 요금 분포")
-        st.plotly_chart(fig3, use_container_width=True)
-
-    with row2_col2:
-        st.subheader("📍 탑승 항구별 승객 분포")
-        embarked_counts = filtered_df['Embarked'].value_counts().reset_index()
-        fig4 = px.pie(embarked_counts, values='count', names='Embarked', hole=0.4)
-        st.plotly_chart(fig4, use_container_width=True)
-
-    # 데이터 테이블 확인
-    if st.checkbox("전체 데이터 보기"):
-        st.dataframe(filtered_df)
-
-
-# --- Tab 2: 생존 예측 시뮬레이터 ---
-with tab2:
-    st.subheader("🕵️ AI 생존 확률 시뮬레이션")
-    st.write("승객의 세부 정보를 입력하면 AI가 생존 가능성을 실시간으로 계산합니다.")
-    
-    c1, c2 = st.columns([1, 1.5])
-    
-    with c1:
-        # 시뮬레이터 입력창
-        i_sex = st.radio("성별", ["여성", "남성"], horizontal=True)
-        i_class = st.select_slider("객실 등급", options=[1, 2, 3], value=1)
-        i_age = st.slider("나이", 0, 80, 25)
-        i_fare = st.number_input("지불 요금 ($)", 0, 500, 30)
-        i_fam = st.slider("동반 가족 수", 0, 10, 0)
+        </li>
+        <li>
+            <strong>데이터 전처리(Data Cleaning & Engineering)</strong>
+            <p><ul>
+            <li>결측치 처리: 나이(Age)는 객실 등급(Pclass)과 성별(Sex)별 중앙값으로 채우고, 승선 항구(Embarked)는 최빈값으로 채운다.</li>
+            <li>컬럼 삭제: 객실 번호(Cabin)는 결측치가 너무 많아 삭제하고, 고유 식별자 역할을 하는 PassengerId와 Ticket도 분석에 필요 없으므로 삭제한다.</li>
+            <li>새로운 컬럼 추가: Name 컬럼에서 호칭(Mr, Mrs, Miss 등)을 추출하여 Title 컬럼을 추가하고, 가족 수를 나타내는 Family 컬럼을 SibSp와 Parch를 합쳐서 추가한다.</li> 
+            <li>범주형 데이터 변환 (Encoding): 머신러닝 모델은 문자열을 이해하지 못하여 성별(Sex)을 숫자(male: 0, female: 1)로  변환한다. </li>
+            </ul></p>
+        </li>
+        <li>
+            <strong>모델링 및 평가</strong>
+            <p>생존 여부를 예측하기 위한 머신러닝 알고리즘을 적용하고, 모델의 성능을 평가한다.<br>
+            <ul>
+                <li>의사결정 나무(Decision Tree)를 사용하여 생존 여부를 예측하는 모델을 학습시킨다.</li>
+                <li>모델이 생존 예측에 가장 중요하게 작용한 변수를 확인하여 도출한 인사이트를 정리한다.</li>
+            </ul></p>
         
-        # 모델 입력 데이터 변환
-        sex_val = 1 if i_sex == "여성" else 0
-        input_data = pd.DataFrame([[i_class, sex_val, i_age, i_fam, 0, i_fare]], 
-                                  columns=['Pclass', 'Sex_Code', 'Age', 'SibSp', 'Parch', 'Fare'])
-        
-        # 예측 수행
-        prob = model.predict_proba(input_data)[0][1] * 100
+        </li>
+        <li>
+            <strong>결과 요약 및 대시보드 기획 (Streamlit 연계)</strong>
+            <p>분석 결과를 비전문가도 이해할 수 있게 정리하고 Streamlit을 이용하여 대시보드를 구현한다.<br>
+                <ol>
+                <li>대시보드 제목 : 타이타닉 생존 인사이트</li>
+                <li>대시보드 상단 (Key Metrics)</li>
+                    <ul>
+                    <li>전체 생존율: 전체 승객 중 생존자의 비율 (게이지 차트)</li>
+                    <li>모델 정확도: 학습된 모델의 예측 성공률 (숫자 위젯, 예: 81%)</li>
+                    <li>주요 변수 Top 5: 생존에 가장 큰 영향을 준 변수 리스트</li>
+                    </ul>
+                <li>대시보드 본문 (Interactive Visualization)</li>
+                    <ul>
+                    <li>생존율 시뮬레이터: 사용자가 객실 등급과 성별을 선택하면 해당 조건에 따른 생존 확률을 실시간으로 계산하여 게이지 차트로 시각화</li>
+                    <li>변수별 생존율 분석: 성별, 객실 등급, 나이 그룹별 생존율을 막대 그래프로 시각화하여 비교</li>
+                    </ul>
+                <li>대시보드 하단 (Insights & Summary)</li>
+                    <ul>
+                    <li>생존율에 영향을 미치는 주요 요인과 모델의 예측 성능을 간결하게 정리하여 보고서 형태로 제공</li>
+                    <li>생존율과 관련된 주요 변수들의 시각화를 포함하여 사용자가 쉽게 이해할 수 있도록 한다.</li>
+                    <li>사용자가 선택한 조건에 따라 생존 확률이 어떻게 변화하는지 시각적으로 보여준다.</li>
+                    </ul>
+                </ol>
 
-    with c2:
-        # 생존 확률 시각화 (게이지)
-        fig_gauge = go.Figure(go.Indicator(
-            mode = "gauge+number",
-            value = prob,
-            title = {'text': f"예상 생존 확률", 'font': {'size': 24}},
-            gauge = {
-                'axis': {'range': [0, 100]},
-                'bar': {'color': "#1f77b4"},
-                'steps': [
-                    {'range': [0, 50], 'color': "#f8d7da"},
-                    {'range': [50, 100], 'color': "#d4edda"}]
-            }
-        ))
-        st.plotly_chart(fig_gauge, use_container_width=True)
-        
-        if prob >= 50:
-            st.success(f"결과: 이 조건의 승객은 **생존 가능성**이 높습니다! ({prob:.1f}%)")
-        else:
-            st.error(f"결과: 이 조건의 승객은 **사망 가능성**이 높습니다. ({prob:.1f}%)")
+            </p>
+        </li>
+    </ol>
+</div>
+ 
+
+
+
+
+
+
+</body>
+</html>
